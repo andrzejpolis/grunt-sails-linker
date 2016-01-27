@@ -23,6 +23,7 @@ module.exports = function(grunt) {
 			startTag: '<!--SCRIPTS-->',
 			endTag: '<!--SCRIPTS END-->',
 			fileTmpl: '<script src="%s"></script>',
+			cacheBuster: false,
 			appRoot: '',
 			relative: false
 		});
@@ -62,7 +63,7 @@ module.exports = function(grunt) {
 					if (options.fileRef) {
 						return options.fileRef(filepath);
 					} else {
-						return util.format(options.fileTmpl, filepath + '?cs=' + checksum);
+						return util.format(options.fileTmpl, filepath + (options.cacheBuster ? '?cs=' + checksum : '') );
 					}
 				});
 

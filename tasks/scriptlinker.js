@@ -9,6 +9,8 @@
 'use strict';
 
 var util = require('util');
+var fs = require('fs');
+var crypto = require('crypto');
 
 module.exports = function(grunt) {
 
@@ -25,6 +27,14 @@ module.exports = function(grunt) {
 			relative: false
 		});
 
+		function md5cheksum(path) {
+			// the file you want to get the hash
+			var data = fs.readFileSync(path);
+			return crypto
+				.createHash('md5')
+				.update(data, 'utf8')
+				.digest('hex')
+		}
 
 		// Iterate over all specified file groups.
 		this.files.forEach(function (f) {
@@ -42,6 +52,7 @@ module.exports = function(grunt) {
 						return false;
 					} else { return true; }
 				}).map(function (filepath) {
+					var checksum = md5cheksum(filepath);
 					filepath = filepath.replace(options.appRoot, '');
 					// If "relative" option is set, remove initial forward slash from file path
 					if (options.relative) {
@@ -51,7 +62,7 @@ module.exports = function(grunt) {
 					if (options.fileRef) {
 						return options.fileRef(filepath);
 					} else {
-						return util.format(options.fileTmpl, filepath);
+						return util.format(options.fileTmpl, filepath + '?cs=' + checksum);
 					}
 				});
 
